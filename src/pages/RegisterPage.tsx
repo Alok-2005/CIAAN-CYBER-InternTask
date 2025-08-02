@@ -11,6 +11,7 @@ const RegisterPage: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [bio, setBio] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +26,7 @@ const RegisterPage: React.FC = () => {
         name,
         email,
         password,
+        bio
       });
       navigate('/login');
     } catch (err: any) {
@@ -164,6 +166,31 @@ const RegisterPage: React.FC = () => {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="bio"
+              className={`block text-sm font-medium mb-1 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+              }`}
+            >
+              Bio
+            </label>
+            <textarea
+              id="bio"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              maxLength={500}
+              rows={4}
+              className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-600 focus:border-transparent shadow-sm transition-colors placeholder-gray-500 resize-y ${
+                isDarkMode 
+                  ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400' 
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
+              placeholder="Tell us about yourself (max 500 characters)"
+              aria-label="Bio"
+            />
           </div>
 
           <button

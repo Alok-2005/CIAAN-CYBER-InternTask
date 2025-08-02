@@ -118,7 +118,11 @@ const ProfilePage: React.FC = () => {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   if (!profile) {
@@ -142,10 +146,10 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className={`min-h-screen pt-8 transition-colors ${
+    <div className={`min-h-screen transition-colors ${
       isDarkMode ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-slate-50 to-blue-50'
     }`}>
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Profile Header */}
         <div className={`rounded-2xl shadow-lg p-8 mb-8 border transition-colors ${
           isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/80 border-white/20'

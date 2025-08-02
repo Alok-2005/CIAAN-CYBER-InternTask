@@ -3,9 +3,29 @@ import Post from '../models/Post.js';
 import User from '../models/User.js';
 import { auth } from '../middleware/auth.js';
 import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' });  // Create 'uploads/' folder in backend root
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dsblwtyin',
+  api_key: process.env.CLOUDINARY_API_KEY || '365117681981613',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'Q2O34tzD6_e6jDMPRPDBt_m5fp8',
+});
+
+// Configure Cloudinary storage for multer
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'communityhub_posts',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    transformation: [{ width: 800, height: 600, crop: 'limit', quality: 'auto' }],
+  },
+});
+
+const upload = multer({ storage: storage });
 
 // Get all posts (feed)
 router.get('/', auth, async (req, res) => {
@@ -68,20 +88,25 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       return res.status(400).json({ message: 'No body provided' });
     }
     const { content } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : '';
+    const image = req.file ? req.file.path : ''; // Cloudinary returns the URL in req.file.path
+    
     if (!content && !image) {
       return res.status(400).json({ message: 'Content or image required' });
     }
+    
     const post = await Post.create({
       content: content || '',
       image: image || '',
       author: req.user._id,
     });
+    
     await User.findByIdAndUpdate(req.user._id, { $inc: { postsCount: 1 } });
+    
     const populatedPost = await Post.findById(post._id)
       .populate('author', 'name email profilePicture')
       .populate('likes', 'name')
       .populate('comments.user', 'name profilePicture');
+    
     res.status(201).json({
       _id: populatedPost._id.toString(),
       content: populatedPost.content,
@@ -290,6 +315,20 @@ router.delete('/:id', auth, async (req, res) => {
 
     if (post.author.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to delete this post' });
+    }
+
+    // Delete image from Cloudinary if it exists
+    if (post.image) {
+      try {
+        // Extract public_id from Cloudinary URL
+        const urlParts = post.image.split('/');
+        const publicIdWithExtension = urlParts[urlParts.length - 1];
+        const publicId = `communityhub_posts/${publicIdWithExtension.split('.')[0]}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (cloudinaryError) {
+        console.error('Error deleting image from Cloudinary:', cloudinaryError);
+        // Continue with post deletion even if image deletion fails
+      }
     }
 
     await Post.findByIdAndDelete(req.params.id);
