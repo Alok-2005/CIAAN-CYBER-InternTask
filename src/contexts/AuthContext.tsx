@@ -10,6 +10,7 @@ interface User {
   followers: string[];
   following: string[];
   postsCount: number;
+   token: string;
 }
 
 interface AuthContextType {
@@ -20,6 +21,7 @@ interface AuthContextType {
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   loading: boolean;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -36,73 +38,96 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      fetchCurrentUser();
-    } else {
-      setLoading(false);
-    }
+    const initializeAuth = async () => {
+      if (token) {
+        try {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          await fetchCurrentUser();
+          setIsAuthenticated(true);
+        } catch (error) {
+          console.error('Auth initialization failed:', error);
+          logout(); // Clear invalid token and user
+        }
+      } else {
+        setLoading(false);
+        setIsAuthenticated(false);
+      }
+    };
+
+    initializeAuth();
   }, [token]);
 
   const fetchCurrentUser = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/auth/me');
-      setUser(response.data);
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      logout();
-    } finally {
-      setLoading(false);
+  try {
+    setLoading(true);
+    const response = await axios.get('http://localhost:5000/api/auth/me');
+    const userData = response.data;
+    if (!userData?.id) {
+      throw new Error('Invalid user data: missing ID');
     }
-  };
+    setUser({ ...userData, token });  // Add existing token to user object
+  } catch (error: any) {
+    console.error('Failed to fetch user:', error);
+    throw new Error('Invalid or expired session');
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-        email,
-        password
-      });
-      
-      const { token: newToken, user: userData } = response.data;
-      setToken(newToken);
-      setUser(userData);
-      localStorage.setItem('token', newToken);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Login failed');
+const login = async (email: string, password: string) => {
+  try {
+    setLoading(true);
+    const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+    const { token: newToken, user: userData } = response.data;
+    if (!userData?.id) {
+      throw new Error('Invalid user data: missing ID');
     }
-  };
+    setToken(newToken);
+    setUser({ ...userData, token: newToken });  // Add token to user object
+    setIsAuthenticated(true);
+    localStorage.setItem('token', newToken);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Login failed');
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const register = async (name: string, email: string, password: string, bio?: string) => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', {
-        name,
-        email,
-        password,
-        bio
-      });
-      
-      const { token: newToken, user: userData } = response.data;
-      setToken(newToken);
-      setUser(userData);
-      localStorage.setItem('token', newToken);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Registration failed');
+
+ const register = async (name: string, email: string, password: string, bio?: string) => {
+  try {
+    setLoading(true);
+    const response = await axios.post('http://localhost:5000/api/auth/register', { name, email, password, bio });
+    const { token: newToken, user: userData } = response.data;
+    if (!userData?.id) {
+      throw new Error('Invalid user data: missing ID');
     }
-  };
+    setToken(newToken);
+    setUser({ ...userData, token: newToken });  // Add token to user object
+    setIsAuthenticated(true);
+    localStorage.setItem('token', newToken);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Registration failed');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const logout = () => {
     setUser(null);
     setToken(null);
+    setIsAuthenticated(false);
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
   };
 
   const updateUser = (userData: Partial<User>) => {
-    if (user) {
+    if (user && userData.id && userData.id === user.id) {
       setUser({ ...user, ...userData });
     }
   };
@@ -114,7 +139,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     register,
     logout,
     updateUser,
-    loading
+    loading,
+    isAuthenticated,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -25,7 +25,11 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      bio: bio || ''
+      bio: bio || '',
+      profilePicture: '',
+      followers: [],
+      following: [],
+      postsCount: 0,
     });
 
     // Generate token
@@ -39,15 +43,15 @@ router.post('/register', async (req, res) => {
       message: 'User created successfully',
       token,
       user: {
-        id: user._id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
         bio: user.bio,
         profilePicture: user.profilePicture,
         followers: user.followers,
         following: user.following,
-        postsCount: user.postsCount
-      }
+        postsCount: user.postsCount,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -82,15 +86,15 @@ router.post('/login', async (req, res) => {
       message: 'Login successful',
       token,
       user: {
-        id: user._id,
+        id: user._id.toString(),
         name: user.name,
         email: user.email,
         bio: user.bio,
         profilePicture: user.profilePicture,
         followers: user.followers,
         following: user.following,
-        postsCount: user.postsCount
-      }
+        postsCount: user.postsCount,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -105,7 +109,30 @@ router.get('/me', auth, async (req, res) => {
       .populate('followers', 'name email profilePicture')
       .populate('following', 'name email profilePicture');
 
-    res.json(user);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      bio: user.bio,
+      profilePicture: user.profilePicture,
+      followers: user.followers.map(f => ({
+        id: f._id.toString(),
+        name: f.name,
+        email: f.email,
+        profilePicture: f.profilePicture,
+      })),
+      following: user.following.map(f => ({
+        id: f._id.toString(),
+        name: f.name,
+        email: f.email,
+        profilePicture: f.profilePicture,
+      })),
+      postsCount: user.postsCount,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

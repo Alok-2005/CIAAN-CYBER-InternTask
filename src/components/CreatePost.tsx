@@ -1,94 +1,171 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Send, Image } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../App';
+import { useNavigate } from 'react-router-dom';
+import { Image, Send } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+interface Post {
+  _id: string;
+  content: string;
+  image?: string;
+  author: {
+    id: string;
+    name: string;
+    email: string;
+    profilePicture: string;
+  };
+  likes: Array<{ id: string; name: string }>;
+  comments: Array<{
+    id: string;
+    user: {
+      id: string;
+      name: string;
+      profilePicture: string;
+    };
+    text: string;
+    createdAt: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
 
 interface CreatePostProps {
-  onPostCreated: (post: any) => void;
+  onPostCreated: (post: Post) => void;
 }
 
 const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
+  const { user, isAuthenticated } = useAuth();
+  const { isDarkMode } = useTheme();
+  const navigate = useNavigate();
   const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!isAuthenticated || !user) {
+      navigate('/login');
+      return;
+    }
+    if (!content.trim() && !image) {
+      setError('Please provide content or an image');
+      return;
+    }
 
     setLoading(true);
     setError('');
 
+    const formData = new FormData();
+    formData.append('content', content);
+    if (image) {
+      formData.append('image', image);
+    }
+
     try {
-      const response = await axios.post('http://localhost:5000/api/posts', {
-        content: content.trim()
+      const response = await axios.post('http://localhost:5000/api/posts', formData, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      
       onPostCreated(response.data);
       setContent('');
+      setImage(null);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create post');
+      if (err.response?.status === 401) {
+        setError('Session expired. Please log in again.');
+        setTimeout(() => navigate('/login'), 2000);
+      } else {
+        setError(err.response?.data?.message || 'Failed to create post');
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+
   return (
-    <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-white/20">
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
-          {error}
-        </div>
-      )}
-      
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className={`rounded-2xl shadow-lg p-6 mb-6 border transition-colors ${
+        isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/80 border-white/20'
+      } backdrop-blur-md`}
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="What's happening in your professional world?"
-            className="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent resize-none placeholder-gray-500 text-gray-900 bg-white/50 backdrop-blur-sm"
+            placeholder="What's on your mind?"
+            className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-600 focus:border-transparent shadow-sm transition-colors placeholder-gray-500 resize-none ${
+              isDarkMode 
+                ? 'bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-400' 
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
             rows={4}
-            maxLength={2000}
+            aria-label="Write a new post"
+            disabled={loading}
           />
-          <div className="flex justify-between items-center mt-2">
-            <span className="text-sm text-gray-500">
-              {content.length}/2000 characters
-            </span>
-          </div>
         </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-              disabled
-            >
-              <Image className="h-5 w-5" />
-              <span className="text-sm">Photo (Coming Soon)</span>
-            </button>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading || !content.trim()}
-            className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-0.5 shadow-lg hover:shadow-xl"
+        <div className="flex items-center space-x-4">
+          <label
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg cursor-pointer transition-colors hover:scale-105 ${
+              isDarkMode
+                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
           >
-            {loading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Posting...</span>
-              </>
-            ) : (
-              <>
-                <Send className="h-4 w-4" />
-                <span>Post</span>
-              </>
-            )}
-          </button>
+            <Image className="h-5 w-5" />
+            <span>{image ? image.name : 'Add Image'}</span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
+              aria-label="Upload an image"
+              disabled={loading}
+            />
+          </label>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            disabled={loading || (!content.trim() && !image)}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors shadow-lg ${
+              isDarkMode
+                ? 'bg-blue-500 text-white hover:bg-blue-600 disabled:bg-blue-400'
+                : 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-500'
+            }`}
+            aria-label="Create post"
+          >
+            <Send className="h-5 w-5" />
+            <span>{loading ? 'Posting...' : 'Post'}</span>
+          </motion.button>
         </div>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg ${
+              isDarkMode ? 'bg-red-900/30 border-red-800 text-red-200' : ''
+            }`}
+            role="alert"
+          >
+            {error}
+          </motion.div>
+        )}
       </form>
-    </div>
+    </motion.div>
   );
 };
 
