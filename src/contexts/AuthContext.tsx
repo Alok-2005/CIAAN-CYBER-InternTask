@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchCurrentUser = async () => {
   try {
     setLoading(true);
-    const response = await axios.get(`${API_URL}/api/auth/me`);
+    const response = await axios.get(`${API_URL}/auth/me`);
     const userData = response.data;
     if (!userData?.id) {
       throw new Error('Invalid user data: missing ID');
@@ -83,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 const login = async (email: string, password: string) => {
   try {
     setLoading(true);
-    const response = await axios.post(`${API_URL}/api/auth/login`, { email, password });
+    const response = await axios.post(`${API_URL}/auth/login`, { email, password });
     const { token: newToken, user: userData } = response.data;
     if (!userData?.id) {
       throw new Error('Invalid user data: missing ID');
@@ -104,7 +104,7 @@ const login = async (email: string, password: string) => {
  const register = async (name: string, email: string, password: string, bio?: string) => {
   try {
     setLoading(true);
-    const response = await axios.post(`${API_URL}/api/auth/register`, { name, email, password, bio });
+    const response = await axios.post(`${API_URL}/auth/register`, { name, email, password, bio });
     const { token: newToken, user: userData } = response.data;
     if (!userData?.id) {
       throw new Error('Invalid user data: missing ID');
