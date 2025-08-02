@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../App';  // Added import for theme
+import { useTheme } from '../App';
 import PostCard from '../components/PostCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { 
@@ -30,7 +30,7 @@ interface UserProfile {
 const ProfilePage: React.FC = () => {
   const { id } = useParams();
   const { user: currentUser, updateUser } = useAuth();
-  const { isDarkMode } = useTheme();  // Added for dark mode
+  const { isDarkMode } = useTheme();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +76,6 @@ const ProfilePage: React.FC = () => {
       const response = await axios.post(`http://localhost:5000/api/users/${id}/follow`);
       setIsFollowing(response.data.isFollowing);
       
-      // Update follower count
       if (profile) {
         setProfile({
           ...profile,
@@ -149,7 +148,7 @@ const ProfilePage: React.FC = () => {
     <div className={`min-h-screen transition-colors ${
       isDarkMode ? 'bg-gradient-to-br from-gray-900 to-gray-800' : 'bg-gradient-to-br from-slate-50 to-blue-50'
     }`}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Profile Header */}
         <div className={`rounded-2xl shadow-lg p-8 mb-8 border transition-colors ${
           isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/80 border-white/20'
