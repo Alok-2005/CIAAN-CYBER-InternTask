@@ -27,6 +27,10 @@ interface UserProfile {
   createdAt: string;
 }
 
+const API_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ciaan-cyber-interntask.onrender.com/api'
+
 const ProfilePage: React.FC = () => {
   const { id } = useParams();
   const { user: currentUser, updateUser } = useAuth();
@@ -50,7 +54,7 @@ const ProfilePage: React.FC = () => {
 
   const fetchProfile = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/users/${id}`);
+      const response = await axios.get(`${API_URL}/users/${id}`);
       setProfile(response.data);
       setIsFollowing(response.data.followers.some((follower: any) => follower._id === currentUser?.id));
       setEditData({ name: response.data.name, bio: response.data.bio });
@@ -61,7 +65,7 @@ const ProfilePage: React.FC = () => {
 
   const fetchUserPosts = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/users/${id}/posts`);
+      const response = await axios.get(`${API_URL}/users/${id}/posts`);
       setPosts(response.data);
     } catch (error) {
       console.error('Error fetching user posts:', error);
@@ -73,7 +77,7 @@ const ProfilePage: React.FC = () => {
   const handleFollow = async () => {
     setFollowLoading(true);
     try {
-      const response = await axios.post(`http://localhost:5000/api/users/${id}/follow`);
+      const response = await axios.post(` ${API_URL}/users/${id}/follow`);
       setIsFollowing(response.data.isFollowing);
       
       if (profile) {
@@ -94,7 +98,7 @@ const ProfilePage: React.FC = () => {
   const handleEditProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.put('http://localhost:5000/api/users/profile', editData);
+      const response = await axios.put(`${API_URL}/users/profile`, editData);
       setProfile({ ...profile!, ...editData });
       updateUser(editData);
       setEditMode(false);

@@ -35,6 +35,9 @@ interface CreatePostProps {
   onPostCreated: (post: Post) => void;
 }
 
+const API_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ciaan-cyber-interntask.onrender.com/api';
 const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
   const { user, isAuthenticated } = useAuth();
   const { isDarkMode } = useTheme();
@@ -65,7 +68,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/posts', formData, {
+      const response = await axios.post(`${API_URL}/posts`, formData, {
         headers: {
           Authorization: `Bearer ${user.token}`,
           'Content-Type': 'multipart/form-data',

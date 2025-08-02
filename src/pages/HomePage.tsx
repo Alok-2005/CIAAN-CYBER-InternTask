@@ -33,6 +33,9 @@ interface Post {
   updatedAt: string;
 }
 
+const API_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ciaan-cyber-interntask.onrender.com/api'
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { isDarkMode } = useTheme();
@@ -57,7 +60,7 @@ const HomePage: React.FC = () => {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
       
-      const response = await axios.get('http://localhost:5000/api/posts');
+      const response = await axios.get(`${API_URL}/posts`);
       setPosts(response.data.posts || []);
       setError('');
     } catch (err: any) {

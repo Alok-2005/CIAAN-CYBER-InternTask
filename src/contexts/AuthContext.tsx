@@ -26,6 +26,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const API_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ciaan-cyber-interntask.onrender.com/api'
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -63,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchCurrentUser = async () => {
   try {
     setLoading(true);
-    const response = await axios.get('http://localhost:5000/api/auth/me');
+    const response = await axios.get(`${API_URL}/api/auth/me`);
     const userData = response.data;
     if (!userData?.id) {
       throw new Error('Invalid user data: missing ID');
@@ -80,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 const login = async (email: string, password: string) => {
   try {
     setLoading(true);
-    const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+    const response = await axios.post(`${API_URL}/api/auth/login`, { email, password });
     const { token: newToken, user: userData } = response.data;
     if (!userData?.id) {
       throw new Error('Invalid user data: missing ID');
@@ -101,7 +104,7 @@ const login = async (email: string, password: string) => {
  const register = async (name: string, email: string, password: string, bio?: string) => {
   try {
     setLoading(true);
-    const response = await axios.post('http://localhost:5000/api/auth/register', { name, email, password, bio });
+    const response = await axios.post(`${API_URL}/api/auth/register`, { name, email, password, bio });
     const { token: newToken, user: userData } = response.data;
     if (!userData?.id) {
       throw new Error('Invalid user data: missing ID');

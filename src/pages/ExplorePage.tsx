@@ -16,6 +16,10 @@ interface User {
   postsCount: number;
 }
 
+const API_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ciaan-cyber-interntask.onrender.com/api'
+
 const ExplorePage: React.FC = () => {
   const { isDarkMode } = useTheme();
   const [users, setUsers] = useState<User[]>([]);
@@ -42,7 +46,7 @@ const ExplorePage: React.FC = () => {
   const fetchUsers = useCallback(async () => {
     try {
       setSearchLoading(true);
-      let url = 'http://localhost:5000/api/users';
+      let url = `${API_URL}/users`;
       if (filter === 'popular') url += '?sort=followers';
       if (filter === 'newest') url += '?sort=createdAt';
       const response = await axios.get(url);
@@ -58,7 +62,7 @@ const ExplorePage: React.FC = () => {
   const searchUsers = useCallback(async () => {
     try {
       setSearchLoading(true);
-      let url = `http://localhost:5000/api/users?search=${encodeURIComponent(searchTerm)}`;
+      let url = `${API_URL}/users?search=${encodeURIComponent(searchTerm)}`;
       if (filter === 'popular') url += '&sort=followers';
       if (filter === 'newest') url += '&sort=createdAt';
       const response = await axios.get(url);

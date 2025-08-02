@@ -37,6 +37,9 @@ interface PostCardProps {
   onPostUpdate: (updatedPost: Post) => void;
   onPostDelete: (postId: string) => void;
 }
+const API_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ciaan-cyber-interntask.onrender.com/api'
 
 const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate, onPostDelete }) => {
   const { user } = useAuth();
@@ -53,7 +56,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate, onPostDelete })
   const handleLike = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/posts/${post._id}/like`,
+        `${API_URL}/posts/${post._id}/like`,
         {},
         { headers: { Authorization: `Bearer ${user?.token}` } }
       );
@@ -69,7 +72,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate, onPostDelete })
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/posts/${post._id}/comment`,
+        `${API_URL}/posts/${post._id}/comment`,
         { text: comment },
         { headers: { Authorization: `Bearer ${user?.token}` } }
       );
@@ -84,7 +87,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate, onPostDelete })
   const handleEditComment = async (commentId: string) => {
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/posts/${post._id}/comments/${commentId}`,
+        `${API_URL}/posts/${post._id}/comments/${commentId}`,
         { text: editText },
         { headers: { Authorization: `Bearer ${user?.token}` } }
       );
@@ -98,7 +101,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate, onPostDelete })
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/posts/${post._id}`, {
+      await axios.delete(`${API_URL}/posts/${post._id}`, {
         headers: { Authorization: `Bearer ${user?.token}` },
       });
       onPostDelete(post._id);

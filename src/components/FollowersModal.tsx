@@ -25,6 +25,10 @@ interface FollowersModalProps {
   title: string;
 }
 
+const API_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ciaan-cyber-interntask.onrender.com/api'
+
 const FollowersModal: React.FC<FollowersModalProps> = ({ 
   isOpen, 
   onClose, 
@@ -48,7 +52,7 @@ const FollowersModal: React.FC<FollowersModalProps> = ({
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/users/${userId}`);
+      const response = await axios.get(`${API_URL}/users/${userId}`);
       const userData = response.data;
       const usersList = type === 'followers' ? userData.followers : userData.following;
       setUsers(usersList || []);
@@ -68,7 +72,7 @@ const FollowersModal: React.FC<FollowersModalProps> = ({
 
   const handleFollow = async (targetUserId: string) => {
     try {
-      const response = await axios.post(`http://localhost:5000/api/users/${targetUserId}/follow`);
+      const response = await axios.post(`${API_URL}/users/${targetUserId}/follow`);
       setFollowingStatus(prev => ({
         ...prev,
         [targetUserId]: response.data.isFollowing

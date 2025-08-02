@@ -5,6 +5,10 @@ import { useTheme } from '../App';
 import { UserPlus, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+
+const API_URL = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:5000/api'
+  : 'https://ciaan-cyber-interntask.onrender.com/api'
 const RegisterPage: React.FC = () => {
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
@@ -22,7 +26,7 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', {
+      await axios.post(`${API_URL}/api/auth/register`, {
         name,
         email,
         password,
