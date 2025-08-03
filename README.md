@@ -24,6 +24,7 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
 - **JWT** for authentication
 - **bcryptjs** for password hashing
 - **CORS** for cross-origin requests
+- **Cloudinary** for image upload management
 
 ## ✨ Features
 
