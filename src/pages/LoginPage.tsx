@@ -153,6 +153,31 @@ const LoginPage: React.FC = () => {
           </button>
         </form>
 
+        {/* New section for example credentials */}
+        <div className={`text-center mt-6 p-4 rounded-lg border ${
+          isDarkMode ? 'border-gray-700 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
+        }`}>
+          <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            Use these credentials to test login:
+          </p>
+          <p className={`text-sm font-mono mt-2 ${isDarkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+            Email: test@gmail.com<br />
+            Password: 123456
+          </p>
+          <p className={`text-sm mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            or{' '}
+            <Link
+              to="/register"
+              className={`font-medium transition-colors hover:underline ${
+                isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+              }`}
+              aria-label="Sign up for a new account"
+            >
+              Register
+            </Link>
+          </p>
+        </div>
+
         <p className={`text-center mt-6 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
           Don't have an account?{' '}
           <Link
