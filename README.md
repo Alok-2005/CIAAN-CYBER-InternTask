@@ -82,6 +82,9 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
    MONGODB_URI="your_mongodb_connection_string"
    JWT_SECRET="your_super_secret_jwt_key_here"
    PORT=5000
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_cloud_secret
    ```
 
 4. **Start the application**
