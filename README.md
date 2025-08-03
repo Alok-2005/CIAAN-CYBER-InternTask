@@ -4,7 +4,7 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
 
 ## 🚀 Live Demo
 
-**Frontend**: Deployed on  Vercel
+**Frontend**: Deployed on  Vercel 
 **Backend**: Deployed on  Railway
 **Database**: MongoDB Atlas
 **Image hosting** :Cloudinary
@@ -68,7 +68,7 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone  https://github.com/Alok-2005/CIAAN-CYBER-InternTask.git
    cd community-hub
    ```
 
