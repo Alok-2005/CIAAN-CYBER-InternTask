@@ -25,13 +25,9 @@ interface FollowersModalProps {
   title: string;
 }
 
-// const API_URL = process.env.NODE_ENV === 'development'
-//   ? 'http://localhost:5000/api'
-//   : 'https://ciaan-cyber-interntask.onrender.com/api';
-
-  const API_URL = process.env.NODE_ENV === 'development'
+const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5000/api'
-  : 'ciaan-cyber-interntask-production.up.railway.app/api';
+  : 'https://ciaan-cyber-interntask.onrender.com/api';
 
 const FollowersModal: React.FC<FollowersModalProps> = ({ 
   isOpen, 

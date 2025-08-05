@@ -16,13 +16,9 @@ interface User {
   postsCount: number;
 }
 
-// const API_URL = process.env.NODE_ENV === 'development'
-//   ? 'http://localhost:5000/api'
-//   : 'https://ciaan-cyber-interntask.onrender.com/api';
-
-  const API_URL = process.env.NODE_ENV === 'development'
+const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5000/api'
-  : 'ciaan-cyber-interntask-production.up.railway.app/api';
+  : 'https://ciaan-cyber-interntask.onrender.com/api';
 
 const ExplorePage: React.FC = () => {
   const { isDarkMode } = useTheme();
