@@ -26,9 +26,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = process.env.NODE_ENV === 'development'
+// const API_URL = process.env.NODE_ENV === 'development'
+//   ? 'http://localhost:5000/api'
+//   : 'https://ciaan-cyber-interntask.onrender.com/api';
+
+  const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5000/api'
-  : 'https://ciaan-cyber-interntask.onrender.com/api'
+  : 'ciaan-cyber-interntask-production.up.railway.app/api';
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

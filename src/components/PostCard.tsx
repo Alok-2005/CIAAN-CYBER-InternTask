@@ -37,9 +37,13 @@ interface PostCardProps {
   onPostUpdate: (updatedPost: Post) => void;
   onPostDelete: (postId: string) => void;
 }
-const API_URL = process.env.NODE_ENV === 'development'
+// const API_URL = process.env.NODE_ENV === 'development'
+//   ? 'http://localhost:5000/api'
+//   : 'https://ciaan-cyber-interntask.onrender.com/api';
+
+  const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5000/api'
-  : 'https://ciaan-cyber-interntask.onrender.com/api'
+  : 'ciaan-cyber-interntask-production.up.railway.app/api';
 
 const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdate, onPostDelete }) => {
   const { user } = useAuth();

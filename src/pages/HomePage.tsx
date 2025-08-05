@@ -32,10 +32,13 @@ interface Post {
   createdAt: string;
   updatedAt: string;
 }
+// const API_URL = process.env.NODE_ENV === 'development'
+//   ? 'http://localhost:5000/api'
+//   : 'https://ciaan-cyber-interntask.onrender.com/api';
 
-const API_URL = process.env.NODE_ENV === 'development'
+  const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5000/api'
-  : 'https://ciaan-cyber-interntask.onrender.com/api'
+  : 'ciaan-cyber-interntask-production.up.railway.app/api';
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { isDarkMode } = useTheme();

@@ -6,9 +6,13 @@ import { UserPlus, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 
-const API_URL = process.env.NODE_ENV === 'development'
+// const API_URL = process.env.NODE_ENV === 'development'
+//   ? 'http://localhost:5000/api'
+//   : 'https://ciaan-cyber-interntask.onrender.com/api';
+
+  const API_URL = process.env.NODE_ENV === 'development'
   ? 'http://localhost:5000/api'
-  : 'https://ciaan-cyber-interntask.onrender.com/api'
+  : 'ciaan-cyber-interntask-production.up.railway.app/api';
 const RegisterPage: React.FC = () => {
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
