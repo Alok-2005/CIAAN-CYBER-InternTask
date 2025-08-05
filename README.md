@@ -4,9 +4,10 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
 
 ## 🚀 Live Demo
 
-**Frontend**: Deployed on Netlify/Vercel
-**Backend**: Deployed on Render/Railway
+**Frontend**: Deployed on  Vercel 
+**Backend**: Deployed on  Railway
 **Database**: MongoDB Atlas
+**Image hosting** :Cloudinary
 
 ## 🛠️ Tech Stack
 
@@ -24,6 +25,7 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
 - **JWT** for authentication
 - **bcryptjs** for password hashing
 - **CORS** for cross-origin requests
+- **Cloudinary** for image upload management
 
 ## ✨ Features
 
@@ -66,7 +68,7 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone  https://github.com/Alok-2005/CIAAN-CYBER-InternTask.git
    cd community-hub
    ```
 
@@ -81,16 +83,15 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
    MONGODB_URI="your_mongodb_connection_string"
    JWT_SECRET="your_super_secret_jwt_key_here"
    PORT=5000
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_cloud_secret
    ```
 
 4. **Start the application**
    ```bash
-   # Development mode (runs both frontend and backend)
    npm run dev
-   
-   # Or run separately:
-   npm run server  # Backend only
-   npm run client  # Frontend only
+   cd server npm run server
    ```
 
 5. **Open your browser**
@@ -101,12 +102,8 @@ A modern, full-stack community platform built with React, Express.js, and MongoD
 For testing purposes, you can create new accounts or use these demo credentials:
 
 **Demo User 1:**
-- Email: demo@example.com
-- Password: demo123
-
-**Demo User 2:**
-- Email: john@example.com
-- Password: john123
+- Email: test@gamil.com
+- Password: 123456
 
 ## 🏗️ Project Structure
 
@@ -165,11 +162,11 @@ The application is fully responsive and optimized for:
 
 ## 🚀 Deployment
 
-### Frontend (Netlify/Vercel)
+### Frontend ( Vercel)
 1. Build the project: `npm run build`
 2. Deploy the `dist` folder to your preferred hosting service
 
-### Backend (Render/Railway)
+### Backend (Render )
 1. Create a new service on your hosting platform
 2. Connect your GitHub repository
 3. Set environment variables
@@ -199,4 +196,4 @@ For any questions or issues, please open an issue on GitHub or contact the devel
 
 ---
 
-**Built with ❤️ for the professional community by [Your Name]**
+**Built with ❤️ for the professional community by Alok Chaturvedi**
